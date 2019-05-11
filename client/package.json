@@ -18,6 +18,11 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "husky": {
+    "hooks": {
+      "commit-msg": "npx commitlint -e %HUSKY_GIT_PARAMS%"
+    }
+  },
   "eslintConfig": {
     "extends": "react-app"
   },
@@ -32,5 +37,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^7.6.1",
+    "@commitlint/config-conventional": "^7.6.0",
+    "husky": "^2.2.0"
   }
 }
