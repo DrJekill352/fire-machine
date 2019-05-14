@@ -1,57 +1,27 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useMemo } from 'react';
+import { Router, Route, Switch } from 'react-router';
+import { createBrowserHistory } from 'history';
+import { syncHistoryWithStore } from 'mobx-react-router';
+import { Home } from 'routes/Home';
+import { TopBar } from 'components/TopBar';
+import { useStore } from 'stores';
 
-import { app } from './firebase.config';
+const browserHistory = createBrowserHistory();
 
-import firebase from 'firebase';
+export function App() {
+  const { routerStore } = useStore();
 
-export const App = () => {
-
-  const [user, setUser] = useState<firebase.User | null>();
-
-  useEffect(() => {
-    firebase.auth().onAuthStateChanged(function(user) {
-      setUser(user);
-    });
-  }, [])
-
-  const handleAuth = useCallback(async () => {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    await app.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-    const result =  await app.auth().signInWithPopup(provider)
-    setUser(result.user);
-  }, []);
-
-  const handleLogout = useCallback(async () => {
-    setUser(undefined);
-    await app.auth().signOut();
-  }, []);
+  const history = useMemo(
+    () => syncHistoryWithStore(browserHistory, routerStore),
+    [routerStore]
+  );
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        {user ? (
-          <>
-            <div>{user.email}</div>
-            <button onClick={handleLogout}>Logout</button>
-          </>
-        ) : (
-            <button onClick={handleAuth}>Auth Google</button>
-          )}
-      </header>
-    </div>
+    <Router history={history}>
+      <TopBar />
+      <Switch>
+        <Route path="/" component={Home} />
+      </Switch>
+    </Router>
   );
 }
