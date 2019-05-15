@@ -18,12 +18,10 @@ export class AuthStore {
   @action public login = async () => {
     const googleProvider = new firebase.auth.GoogleAuthProvider();
     await app.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-    const result = await app.auth().signInWithPopup(googleProvider);
-    runInAction(() => (this.user = result.user));
+    await app.auth().signInWithPopup(googleProvider);
   };
 
   @action public logout = async () => {
     await app.auth().signOut();
-    runInAction(() => (this.user = null));
   };
 }
